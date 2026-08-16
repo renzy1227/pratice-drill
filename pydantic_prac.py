@@ -1,6 +1,9 @@
 from pydantic import BaseModel 
 from pydantic import Field
 from enum import Enum 
+from openai import OpenAI
+
+client = OpenAI()
 
 class sentiment(str,Enum):
     positive="positive"
@@ -11,28 +14,13 @@ class review(BaseModel):
     rating:int=Field(ge=1,le=9)
     summary:str
 
-class revresult(BaseModel):
-    reviews:list[review]
 
-
-
-
-r = revresult(
-    reviews=[
-        {
-            "sentiment": "positive",
-            "rating": 5,
-            "summary": "The product is excellent."
-        },
-        {
-            "sentiment": "positive",
-            "rating": 4,
-            "summary": "The product is nice."
-        }
-    ]
+response = client.responses.parse(
+    model="gpt-5.6",
+    input="""
+    Honestly, I love this phone. The camera is amazing and the battery
+    lasts all day. The only issue is that it gets slightly hot while gaming.
+    Overall, I'd give it 4 stars.
+    """,
+    text_format=ProductReview,
 )
-
-
-
- 
-print(r)
